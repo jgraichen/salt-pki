@@ -1,0 +1,5 @@
+id: test_master
+
+pki:
+  default:
+    runner: test.sign

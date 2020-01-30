@@ -1,0 +1,31 @@
+name: pytest
+on: push
+
+jobs:
+  pytest:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env:
+          - py37-salt2019-crypt
+          - ubuntu1804-py36-salt2017-crypt21
+          - debian10-py37-salt2018-crypt26
+        include:
+          - python: 3.7
+            name: Python 3.7 / Salt 2019
+            env: py36-salt2019-crypt
+          - python: 3.6
+            name: Ubuntu 18.04 (Python 3.6 / Salt 2017 / Cryptography 2.1)
+            env: ubuntu1804-py36-salt2017-crypt21
+          - python: 3.7
+            name: Debian 10 (Python 3.7 / Salt 2018 / Cryptography 2.6)
+            env: debian10-py37-salt2018-crypt26
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install --upgrade pip tox
+      - run: tox -e ${{ matrix.env }}
