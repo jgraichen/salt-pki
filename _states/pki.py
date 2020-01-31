@@ -92,7 +92,7 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
 
 def certificate(name, csr=None, days_remaining=28, backup=True, **kwargs):
     """
-    Manage a ACME certificate
+    Manage a x509 certificate.
 
     name:
         Path to store the certificate.
