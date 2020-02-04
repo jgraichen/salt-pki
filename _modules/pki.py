@@ -487,7 +487,7 @@ class _SubjectAltName:
                     )
                 )
 
-        return names
+        return sorted(names)
 
     @staticmethod
     def build(value):

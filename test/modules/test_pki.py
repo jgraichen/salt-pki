@@ -35,10 +35,10 @@ _EXAMPLE_PUBKEY = {
 _EXAMPLE_CSR = {
     "extensions": {
         "subjectAltName": [
-            "DNS:example.org",
             "DNS:example.com",
-            "DNS:www.example.org",
+            "DNS:example.org",
             "DNS:www.example.com",
+            "DNS:www.example.org",
         ]
     },
     "public_key": _EXAMPLE_PUBKEY,
@@ -54,10 +54,10 @@ _EXAMPLE_CSR = {
 _EXAMPLE_CERT = {
     "extensions": {
         "subjectAltName": [
-            "DNS:example.org",
             "DNS:example.com",
-            "DNS:www.example.org",
+            "DNS:example.org",
             "DNS:www.example.com",
+            "DNS:www.example.org",
         ]
     },
     "issuer": {
