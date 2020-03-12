@@ -384,9 +384,9 @@ def _get_oid(name, cls=None):
     if re.search(r"^\d+(\.\d+)*$", name):
         return x509.oid.ObjectIdentifier(name)
 
-    for o, n in x509.oid._OID_NAMES.items():
-        if name == n and (not cls or o in cls.__dict__.values()):
-            return o
+    for oid, name in x509.oid._OID_NAMES.items():
+        if name == name and (not cls or oid in cls.__dict__.values()):
+            return oid
 
     raise KeyError(f"Unknown OID: {name}")
 

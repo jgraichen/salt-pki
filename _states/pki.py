@@ -73,7 +73,7 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
 
     if __opts__["test"] is True:
         ret["result"] = None
-        ret["commen"] = "A new private key would be generated"
+        ret["comment"] = "A new private key would be generated"
         return ret
 
     if os.path.isfile(name) and backup:
@@ -85,7 +85,7 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
     )
 
     ret["result"] = True
-    ret["comment"] = "New Private key generated"
+    ret["comment"] = "New private key generated"
 
     return ret
 
