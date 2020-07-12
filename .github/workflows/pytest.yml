@@ -6,6 +6,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         env:
           - py37-salt2019-crypt
