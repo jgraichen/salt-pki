@@ -260,6 +260,17 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
     csr:
         Path to certificate signing request file.
 
+    module:
+        Execution module called to sign the CSR. The CSR is passed as a
+        PEM-encoded string as the first argument to the module. It is expected
+        to return a dictionary with the following field(s):
+
+        text:
+            The resulting certificate as a PEM-encoded string. It may contain
+            additional intermediate certificates.
+
+        A default module is fetched with ``config.get`` from ``pki:default:module``.
+
     runner:
         Runner to call on the master. The CSR is passed as a PEM-encoded string
         as the first argument to the runner. It is expected to return a
@@ -281,28 +292,46 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
     if not csr:
         raise SaltInvocationError("CSR is required")
 
-    runner = __salt__["config.get"]("pki:default:runner", None)
-    runner = kwargs.get("runner", runner)
+    if "runner" in kwargs and "module" in kwargs:
+        raise SaltInvocationError("Either use 'runner' or 'module'")
 
-    if not runner:
-        raise SaltInvocationError("Runner is required")
+    if 'runner' not in kwargs and 'module' not in kwargs:
+        default = __salt__["config.get"]("pki:default", {})
+
+        if 'runner' in default:
+            kwargs['runner'] = default['runner']
+        if 'module' in default:
+            kwargs['module'] = default['module']
+
+    if not kwargs.get('runner', None) and not kwargs.get('module', None):
+        raise SaltInvocationError("Either 'runner' or 'module' is required")
 
     if os.path.exists(csr):
         with _fopen(csr, "r") as f:
             csr = f.read()
 
-    resp = __salt__["publish.runner"](runner, arg=csr, timeout=timeout)
+    if 'runner' in kwargs:
+        runner = kwargs['runner']
+        resp = __salt__["publish.runner"](runner, arg=csr, timeout=timeout)
 
-    if not resp:
-        raise SaltInvocationError(
-            f"Nothing returned from runner, do you have permissions run {runner}?"
-        )
+        if not resp:
+            raise SaltInvocationError(
+                f"Nothing returned from runner, do you have permissions run {runner}?"
+            )
 
-    if isinstance(resp, str) and "timed out" in resp:
-        raise SaltReqTimeoutError(resp)
+        if isinstance(resp, str) and "timed out" in resp:
+            raise SaltReqTimeoutError(resp)
 
-    if isinstance(resp, str):
-        raise CommandExecutionError(resp)
+        if isinstance(resp, str):
+            raise CommandExecutionError(resp)
+
+    elif 'module' in kwargs:
+        signer = 'Module'
+        module = kwargs['module']
+        if module not in __salt__:
+            raise SaltInvocationError(f'Module {module} not available')
+
+        resp = __salt__[module](csr)
 
     if not isinstance(resp, dict):
         raise CommandExecutionError(
@@ -313,7 +342,7 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
         ret = read_certificate(resp["text"])
     except ValueError as e:
         raise CommandExecutionError(
-            f"Runner did not return a valid PEM-encoded certificate: {e}"
+            f"Did not return a valid PEM-encoded certificate: {e}"
         )
 
     if path:

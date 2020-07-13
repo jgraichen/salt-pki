@@ -327,6 +327,40 @@ def test_create_certificate(mods, tmpdir):
         assert f.read() == test_crt
 
 
+def test_create_certificate_module(mods, tmpdir):
+    path = os.path.join(tmpdir, "test.crt")
+    fn = mods["pki.create_certificate"]
+
+    def mock(csr):
+        with open("test/fixtures/example.csr", "r") as f:
+            assert csr == f.read()
+
+        with open("test/fixtures/example.crt", "r") as f:
+            return {"text": f.read()}
+
+    with patch.dict(fn.__globals__["__salt__"], {"test.sign": mock}):
+        ret = fn(path, csr="test/fixtures/example.csr", module="test.sign")
+
+    assert ret == _EXAMPLE_CERT
+    assert os.path.exists(path)
+
+    with open("test/fixtures/example.crt", "r") as example:
+        with open(path, "r") as crt:
+            assert crt.read() == example.read()
+
+
+def test_create_certificate_module_and_runner(mods, tmpdir):
+    path = os.path.join(tmpdir, "test.crt")
+
+    with pytest.raises(SaltInvocationError):
+        mods["pki.create_certificate"](
+            path,
+            csr="test/fixtures/example.csr",
+            module="test.sign",
+            runner="test.sign",
+        )
+
+
 def test_read_certificate(mods):
     path = "test/fixtures/example.crt"
 
