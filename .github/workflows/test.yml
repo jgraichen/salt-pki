@@ -8,7 +8,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [3.7]
         include:
           - python: 3.8
             name: Python 3.8 / Salt 3001
@@ -19,12 +18,12 @@ jobs:
           - python: 3.7
             name: Python 3.7 / Salt 2019
             env: py3-salt2019-crypt
-          - python: 3.6
-            name: Ubuntu 18.04 (Python 3.6 / Salt 2017 / Cryptography 2.1)
-            env: py3-salt2017-crypt21
           - python: 3.7
             name: Debian 10 (Python 3.7 / Salt 2018 / Cryptography 2.6)
             env: py3-salt2018-crypt26
+          - python: 3.6
+            name: Ubuntu 18.04 (Python 3.6 / Salt 2017 / Cryptography 2.1)
+            env: py3-salt2017-crypt21
 
     steps:
       - uses: actions/checkout@v1
