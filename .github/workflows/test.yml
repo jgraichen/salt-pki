@@ -8,10 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        env:
-          - py37-salt2019-crypt
-          - ubuntu1804-py36-salt2017-crypt21
-          - debian10-py37-salt2018-crypt26
+        python: [3.7]
         include:
           - python: 3.7
             name: Python 3.7 / Salt 2019
