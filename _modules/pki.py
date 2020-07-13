@@ -29,6 +29,12 @@ try:
     from cryptography.hazmat.primitives import hashes, serialization
     from cryptography.hazmat.primitives.asymmetric import rsa, ec
 
+    _HASHES = {
+        "sha256": hashes.SHA256(),
+        "sha384": hashes.SHA384(),
+        "sha512": hashes.SHA512(),
+    }
+
     _HAS_CRYPTOGRAPHY = True
 except ImportError:
     _HAS_CRYPTOGRAPHY = False
@@ -565,9 +571,3 @@ class _SubjectAltName:
 
 
 _EXTENSIONS = {"subjectAltName": _SubjectAltName}
-
-_HASHES = {
-    "sha256": hashes.SHA256(),
-    "sha384": hashes.SHA384(),
-    "sha512": hashes.SHA512(),
-}
