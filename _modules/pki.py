@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=missing-docstring
 """
 Manage PKI (X509) infrastructure
 
@@ -144,6 +145,8 @@ def create_csr(path=None, text=False, algorithm="sha384", **kwargs):
         Path to write the CSR to.
 
     text:
+        Directly return PEM-encoded CSR instead of dictionary with details.
+        Either ``path`` or ``text`` must be specified.
 
     key:
         Path to the private key used to sign the CSR.
@@ -295,23 +298,23 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
     if "runner" in kwargs and "module" in kwargs:
         raise SaltInvocationError("Either use 'runner' or 'module'")
 
-    if 'runner' not in kwargs and 'module' not in kwargs:
+    if "runner" not in kwargs and "module" not in kwargs:
         default = __salt__["config.get"]("pki:default", {})
 
-        if 'runner' in default:
-            kwargs['runner'] = default['runner']
-        if 'module' in default:
-            kwargs['module'] = default['module']
+        if "runner" in default:
+            kwargs["runner"] = default["runner"]
+        if "module" in default:
+            kwargs["module"] = default["module"]
 
-    if not kwargs.get('runner', None) and not kwargs.get('module', None):
+    if not kwargs.get("runner", None) and not kwargs.get("module", None):
         raise SaltInvocationError("Either 'runner' or 'module' is required")
 
     if os.path.exists(csr):
         with _fopen(csr, "r") as f:
             csr = f.read()
 
-    if 'runner' in kwargs:
-        runner = kwargs['runner']
+    if "runner" in kwargs:
+        runner = kwargs["runner"]
         resp = __salt__["publish.runner"](runner, arg=csr, timeout=timeout)
 
         if not resp:
@@ -325,11 +328,10 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
         if isinstance(resp, str):
             raise CommandExecutionError(resp)
 
-    elif 'module' in kwargs:
-        signer = 'Module'
-        module = kwargs['module']
+    elif "module" in kwargs:
+        module = kwargs["module"]
         if module not in __salt__:
-            raise SaltInvocationError(f'Module {module} not available')
+            raise SaltInvocationError(f"Module {module} not available")
 
         resp = __salt__[module](csr)
 
@@ -413,7 +415,7 @@ def _get_oid(name, cls=None):
     if re.search(r"^\d+(\.\d+)*$", name):
         return x509.oid.ObjectIdentifier(name)
 
-    for oid, name in x509.oid._OID_NAMES.items():
+    for oid, name in x509.oid._OID_NAMES.items():  # pylint: disable=protected-access
         if name == name and (not cls or oid in cls.__dict__.values()):
             return oid
 
@@ -421,7 +423,7 @@ def _get_oid(name, cls=None):
 
 
 def _read_name(name):
-    return {n.oid._name: n.value for n in name}
+    return {n.oid._name: n.value for n in name}  # pylint: disable=protected-access
 
 
 def _create_name(name):
@@ -466,7 +468,7 @@ def _read_extensions(extensions):
     ret = {}
 
     for ext in extensions:
-        name = ext.oid._name
+        name = ext.oid._name  # pylint: disable=protected-access
 
         if name in _EXTENSIONS:
             ret[name] = _EXTENSIONS[name].read(ext)

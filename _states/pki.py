@@ -80,7 +80,7 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
         bkroot = os.path.join(__opts__["cachedir"], "file_backup")
         _backup_minion(name, bkroot)
 
-    output = __salt__["pki.create_private_key"](
+    __salt__["pki.create_private_key"](
         path=name, type=type, size=size, curve=curve
     )
 
