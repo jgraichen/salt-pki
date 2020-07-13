@@ -217,7 +217,7 @@ def test_create_csr(mods, tmpdir):
     ret = mods["pki.create_csr"](
         path,
         key="test/fixtures/example-ec.key",
-        subject={"commonName": "localhost"},
+        subject={"commonName": "localhost", "countryName": "DE"},
         extensions={"subjectAltName": "DNS:localhost,IP:127.0.0.1"},
     )
 
@@ -225,7 +225,7 @@ def test_create_csr(mods, tmpdir):
     assert ret == {
         "extensions": {"subjectAltName": ["DNS:localhost", "IP:127.0.0.1"]},
         "public_key": _EXAMPLE_PUBKEY,
-        "subject": {"commonName": "localhost"},
+        "subject": {"commonName": "localhost", "countryName": "DE"},
     }
 
     with open(path, "rb") as f:
@@ -233,7 +233,10 @@ def test_create_csr(mods, tmpdir):
 
     assert isinstance(csr, x509.CertificateSigningRequest)
     assert csr.subject == x509.Name(
-        [x509.NameAttribute(x509.NameOID.COMMON_NAME, "localhost")]
+        [
+            x509.NameAttribute(x509.NameOID.COMMON_NAME, "localhost"),
+            x509.NameAttribute(x509.NameOID.COUNTRY_NAME, "DE"),
+        ]
     )
 
     assert repr(csr.extensions) == repr(
