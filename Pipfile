@@ -4,9 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-salt = "*"
 acme = "*"
 cryptography = "*"
+distro = "*" # missing dependency of salt
+salt = "*"
 
 [dev-packages]
+matchlib = "*"
 pytest = "*"

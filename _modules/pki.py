@@ -557,7 +557,7 @@ class _SubjectAltName:
         if key == "dirname":
             return x509.DirectoryName(str(value))
 
-        if key == "ip" or key == "ip address":
+        if key in ("ip", "ip address"):
             import ipaddress
 
             try:

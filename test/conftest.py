@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=missing-docstring,redefined-outer-name
 
+import logging
 import os
 import tempfile
 
@@ -12,7 +13,7 @@ import salt.loader
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
-@pytest.yield_fixture(scope="session")
+@pytest.fixture(scope="session")
 def tmpd():
     with tempfile.TemporaryDirectory() as d:
         yield d
@@ -23,7 +24,7 @@ def opts(tmpd):
     opts = salt.config.minion_config(os.path.join(ROOT, "test/minion.yml"))
     opts["cachedir"] = os.path.join(tmpd, "cache")
     opts["pki_dir"] = os.path.join(tmpd, "pki")
-    opts["module_dirs"] = [ROOT]
+    opts["module_dirs"] = [ROOT, os.path.join(ROOT, "test/fixtures")]
 
     grains = salt.loader.grains(opts)
     opts["grains"] = grains
@@ -49,3 +50,7 @@ def serializers(opts):
 @pytest.fixture(scope="session")
 def states(opts, mods, utils, serializers):
     return salt.loader.states(opts, mods, utils, serializers)
+
+@pytest.fixture(autouse=True)
+def debug_log_level(caplog):
+    caplog.set_level(logging.DEBUG)
