@@ -9,6 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - python: 3.9
+            name: Python 3.9 / Salt 3001
+            env: py3-salt3001-crypt
           - python: 3.8
             name: Python 3.8 / Salt 3001
             env: py3-salt3001-crypt
