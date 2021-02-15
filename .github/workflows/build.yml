@@ -1,10 +1,10 @@
-name: test
+name: build
 on: push
 
 jobs:
   pytest:
     name: ${{ matrix.name }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -36,3 +36,15 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install wheel tox
       - run: tox -e ${{ matrix.env }} -- -vv
+
+  pylint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - run: python -m pip install --upgrade pip
+      - run: pip install pylint
+      - run: pylint --jobs $(nproc) --exit-zero **/*.py
+
