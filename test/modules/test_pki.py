@@ -343,7 +343,7 @@ def test_create_certificate_runner(mods, tmpdir):
     with patch.dict(
         fn.__globals__["__salt__"], {"publish.runner": publish_runner_mock}
     ):
-        ret = fn(path, csr="test/fixtures/example.csr", runner="test,sign")
+        ret = fn(path, csr="test/fixtures/example.csr", runner="test.sign")
 
     assert ret == _EXAMPLE_CERT
     assert os.path.exists(path)
