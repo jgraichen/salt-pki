@@ -10,7 +10,6 @@ import binascii
 import datetime
 import os
 import re
-from pprint import pprint
 
 from salt.exceptions import (
     CommandExecutionError,
@@ -335,9 +334,6 @@ def create_certificate(
         raise SaltInvocationError("Either use 'runner' or 'module'")
 
     if "runner" not in kwargs and "module" not in kwargs:
-        pprint(__salt__)
-        # import pdb
-        # pdb.set_trace()
         default = __salt__["config.get"]("pki:default", {})
 
         if "runner" in default:
