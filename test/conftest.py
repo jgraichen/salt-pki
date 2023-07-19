@@ -53,6 +53,7 @@ def states(opts, mods, utils, serializers):
     loader._load_module("pki")  # pylint: disable=protected-access
     return loader
 
+
 @pytest.fixture(autouse=True)
 def debug_log_level(caplog):
     caplog.set_level(logging.DEBUG)
