@@ -5,16 +5,12 @@
 import os
 import shutil
 import stat
-
-from pprint import pprint
-
+import sys
 from unittest.mock import patch
 
-from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec
-
 from matchlib import Partial
 
 
@@ -50,7 +46,7 @@ def test_private_key(states, tmpdir):
 def test_private_key_test(states, tmpdir):
     path = os.path.join(tmpdir, "example.key")
 
-    with patch.dict(states.opts, {"test": True}):
+    with patch.dict(sys.modules["salt.loaded.ext.states.pki"].__opts__, {"test": True}):
         ret = states["pki.private_key"](path)
 
     assert ret == {
@@ -146,7 +142,7 @@ def test_certificate(states, mods, tmpdir):
 def test_certificate_test(states, tmpdir):
     path = os.path.join(tmpdir, "example.crt")
 
-    with patch.dict(states.opts, {"test": True}):
+    with patch.dict(sys.modules["salt.loaded.ext.states.pki"].__opts__, {"test": True}):
         ret = states["pki.certificate"](path, csr="test/fixtures/example.csr")
 
     assert ret == Partial(
@@ -271,7 +267,7 @@ def test_certificate_domain_update_test(states, mods, tmpdir):
     assert os.path.exists(path)
 
     # Check test mode on updates
-    with patch.dict(states.opts, {"test": True}):
+    with patch.dict(sys.modules["salt.loaded.ext.states.pki"].__opts__, {"test": True}):
         ret = states["pki.certificate"](
             path, key="test/fixtures/example-ec.key", domains="example.org"
         )
@@ -358,7 +354,10 @@ def test_certificate_renewal(states, mods, tmpdir):
         assert kwargs == {"days_remaining": 28}
         return True
 
-    with patch.dict(mods, {"pki.renewal_needed": renewal_needed}):
+    with patch.dict(
+        mods._dict,  # pylint: disable=protected-access
+        {"pki.renewal_needed": renewal_needed},
+    ):
         ret = states["pki.certificate"](path, **kwargs)
 
     assert ret == Partial(
@@ -386,7 +385,6 @@ def test_certificate_renewal(states, mods, tmpdir):
     assert old_serial != crt["serial"]
 
 
-
 def test_certificate_renewal_test(states, mods, tmpdir):
     """
     Testing a dynamic certificate with a list of domain names.
@@ -403,9 +401,14 @@ def test_certificate_renewal_test(states, mods, tmpdir):
         assert kwargs == {"days_remaining": 28}
         return True
 
-    with patch.dict(mods, {"pki.renewal_needed": renewal_needed}):
+    with patch.dict(
+        mods._dict,  # pylint: disable=protected-access
+        {"pki.renewal_needed": renewal_needed},
+    ):
         # Check test mode renewal
-        with patch.dict(states.opts, {"test": True}):
+        with patch.dict(
+            sys.modules["salt.loaded.ext.states.pki"].__opts__, {"test": True}
+        ):
             ret = states["pki.certificate"](path, **kwargs)
 
     assert ret == Partial(

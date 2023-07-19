@@ -13,7 +13,7 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
-
+from cryptography.x509.oid import NameOID
 from salt.exceptions import SaltInvocationError
 
 _EXAMPLE_PUBKEY = {
@@ -299,7 +299,6 @@ def test_read_csr(mods):
 
 def test_create_certificate(mods, tmpdir):
     path = os.path.join(tmpdir, "test.crt")
-    fn = mods["pki.create_certificate"]
 
     def mock(csr):
         with open("test/fixtures/example.csr", "r", encoding="utf8") as f:
@@ -308,8 +307,11 @@ def test_create_certificate(mods, tmpdir):
         with open("test/fixtures/example.crt", "r", encoding="utf8") as f:
             return {"text": f.read()}
 
-    with patch.dict(fn.__globals__["__salt__"], {"test.sign": mock}):
-        ret = fn(path, csr="test/fixtures/example.csr")
+    with patch.dict(
+        mods._dict,  # pylint: disable=protected-access
+        {"test.sign": mock},
+    ):
+        ret = mods["pki.create_certificate"](path, csr="test/fixtures/example.csr")
 
     assert ret == _EXAMPLE_CERT
     assert os.path.exists(path)
@@ -321,7 +323,6 @@ def test_create_certificate(mods, tmpdir):
 
 def test_create_certificate_runner(mods, tmpdir):
     path = os.path.join(tmpdir, "test.crt")
-    fn = mods["pki.create_certificate"]
 
     with open("test/fixtures/example.crt", "r", encoding="utf8") as f:
         test_crt = f.read()
@@ -337,9 +338,12 @@ def test_create_certificate_runner(mods, tmpdir):
             return {"text": f.read()}
 
     with patch.dict(
-        fn.__globals__["__salt__"], {"publish.runner": publish_runner_mock}
+        mods._dict,  # pylint: disable=protected-access
+        {"publish.runner": publish_runner_mock},
     ):
-        ret = fn(path, csr="test/fixtures/example.csr", runner="test.sign")
+        ret = mods["pki.create_certificate"](
+            path, csr="test/fixtures/example.csr", runner="test.sign"
+        )
 
     assert ret == _EXAMPLE_CERT
     assert os.path.exists(path)

@@ -3,10 +3,10 @@
 
 import logging
 import os
+import sys
 import tempfile
 
 import pytest
-
 import salt.config
 import salt.loader
 
@@ -32,24 +32,26 @@ def opts(tmpd):
     return opts
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def utils(opts):
     return salt.loader.utils(opts)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def mods(opts, utils):
     return salt.loader.minion_mods(opts, utils=utils)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def serializers(opts):
     return salt.loader.serializers(opts)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def states(opts, mods, utils, serializers):
-    return salt.loader.states(opts, mods, utils, serializers)
+    loader = salt.loader.states(opts, mods, utils, serializers)
+    loader._load_module("pki")  # pylint: disable=protected-access
+    return loader
 
 @pytest.fixture(autouse=True)
 def debug_log_level(caplog):
