@@ -27,12 +27,40 @@ try:
 
     from cryptography.hazmat.backends import default_backend as _default_backend
     from cryptography.hazmat.primitives import hashes, serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa, ec
+    from cryptography.hazmat.primitives.asymmetric import ec, rsa
+    from cryptography.x509.oid import NameOID
 
     _HASHES = {
         "sha256": hashes.SHA256(),
         "sha384": hashes.SHA384(),
         "sha512": hashes.SHA512(),
+    }
+
+    _NAME_OIDS = {
+        "commonName": NameOID.COMMON_NAME,
+        "countryName": NameOID.COUNTRY_NAME,
+        "localityName": NameOID.LOCALITY_NAME,
+        "stateOrProvinceName": NameOID.STATE_OR_PROVINCE_NAME,
+        "streetAddress": NameOID.STREET_ADDRESS,
+        "organizationName": NameOID.ORGANIZATION_NAME,
+        "organizationalUnitName": NameOID.ORGANIZATIONAL_UNIT_NAME,
+        "serialNumber": NameOID.SERIAL_NUMBER,
+        "surname": NameOID.SURNAME,
+        "givenName": NameOID.GIVEN_NAME,
+        "title": NameOID.TITLE,
+        "generationQualifier": NameOID.GENERATION_QUALIFIER,
+        "x500UniqueIdentifier": NameOID.X500_UNIQUE_IDENTIFIER,
+        "dnQualifier": NameOID.DN_QUALIFIER,
+        "pseudonym": NameOID.PSEUDONYM,
+        "userID": NameOID.USER_ID,
+        "domainComponent": NameOID.DOMAIN_COMPONENT,
+        "emailAddress": NameOID.EMAIL_ADDRESS,
+        "jurisdictionCountryName": NameOID.JURISDICTION_COUNTRY_NAME,
+        "jurisdictionLocalityName": NameOID.JURISDICTION_LOCALITY_NAME,
+        "jurisdictionStateOrProvinceName": NameOID.JURISDICTION_STATE_OR_PROVINCE_NAME,
+        "businessCategory": NameOID.BUSINESS_CATEGORY,
+        "postalAddress": NameOID.POSTAL_ADDRESS,
+        "postalCode": NameOID.POSTAL_CODE,
     }
 
     _HAS_CRYPTOGRAPHY = True
@@ -417,13 +445,12 @@ def renewal_needed(path, days_remaining=28):
     return remaining_days < days_remaining
 
 
-def _get_oid(name, cls=None):
+def _get_oid_name(name):
     if re.search(r"^\d+(\.\d+)*$", name):
         return x509.oid.ObjectIdentifier(name)
 
-    for oid, oname in x509.oid._OID_NAMES.items():  # pylint: disable=protected-access
-        if name == oname and (not cls or oid in cls.__dict__.values()):
-            return oid
+    if name in _NAME_OIDS:
+        return _NAME_OIDS[name]
 
     raise KeyError(f"Unknown OID: {name}")
 
@@ -441,10 +468,7 @@ def _create_name(name):
 
     if isinstance(name, dict):
         return x509.Name(
-            [
-                x509.NameAttribute(_get_oid(k, x509.oid.NameOID), str(v))
-                for k, v in name.items()
-            ]
+            [x509.NameAttribute(_get_oid_name(k), str(v)) for k, v in name.items()]
         )
 
     raise ValueError(f"The x509 name must be a string or dictionary, but was: {name!r}")
