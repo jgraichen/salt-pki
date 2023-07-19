@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=missing-module-docstring
 
-import os
 import logging
+import os
 
 try:
     from salt.utils.files import backup_minion as _backup_minion
@@ -20,7 +21,9 @@ def __virtual__():
     return True
 
 
-def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup=True):
+def private_key(
+    name, new=False, type="ec", size=4096, curve="secp256r1", backup=True
+):  # pylint: disable=R0913
     """
     Manage a private key.
 
@@ -80,9 +83,7 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
         bkroot = os.path.join(__opts__["cachedir"], "file_backup")
         _backup_minion(name, bkroot)
 
-    __salt__["pki.create_private_key"](
-        path=name, type=type, size=size, curve=curve
-    )
+    __salt__["pki.create_private_key"](path=name, type=type, size=size, curve=curve)
 
     ret["result"] = True
     ret["comment"] = "New private key generated"
@@ -90,7 +91,9 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
     return ret
 
 
-def certificate(name, csr=None, days_remaining=28, backup=True, **kwargs):
+def certificate(
+    name, csr=None, days_remaining=28, backup=True, **kwargs
+):  # pylint: disable=R0912
     """
     Manage a x509 certificate.
 

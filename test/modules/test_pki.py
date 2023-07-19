@@ -6,19 +6,15 @@ import datetime
 import ipaddress
 import os
 import stat
-
 from unittest.mock import patch
 
 import pytest
-
 from cryptography import x509
-from cryptography.x509.oid import NameOID
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 
 from salt.exceptions import SaltInvocationError
-
 
 _EXAMPLE_PUBKEY = {
     "type": "ec",
@@ -306,10 +302,10 @@ def test_create_certificate(mods, tmpdir):
     fn = mods["pki.create_certificate"]
 
     def mock(csr):
-        with open("test/fixtures/example.csr", "r") as f:
+        with open("test/fixtures/example.csr", "r", encoding="utf8") as f:
             assert csr == f.read()
 
-        with open("test/fixtures/example.crt", "r") as f:
+        with open("test/fixtures/example.crt", "r", encoding="utf8") as f:
             return {"text": f.read()}
 
     with patch.dict(fn.__globals__["__salt__"], {"test.sign": mock}):
@@ -318,8 +314,8 @@ def test_create_certificate(mods, tmpdir):
     assert ret == _EXAMPLE_CERT
     assert os.path.exists(path)
 
-    with open("test/fixtures/example.crt", "r") as example:
-        with open(path, "r") as crt:
+    with open("test/fixtures/example.crt", "r", encoding="utf8") as example:
+        with open(path, "r", encoding="utf8") as crt:
             assert crt.read() == example.read()
 
 
@@ -327,17 +323,17 @@ def test_create_certificate_runner(mods, tmpdir):
     path = os.path.join(tmpdir, "test.crt")
     fn = mods["pki.create_certificate"]
 
-    with open("test/fixtures/example.crt", "r") as f:
+    with open("test/fixtures/example.crt", "r", encoding="utf8") as f:
         test_crt = f.read()
 
     def publish_runner_mock(name, arg, timeout):
         assert name == "test.sign"
         assert timeout == 120
 
-        with open("test/fixtures/example.csr", "r") as f:
+        with open("test/fixtures/example.csr", "r", encoding="utf8") as f:
             assert arg == f.read()
 
-        with open("test/fixtures/example.crt", "r") as f:
+        with open("test/fixtures/example.crt", "r", encoding="utf8") as f:
             return {"text": f.read()}
 
     with patch.dict(
@@ -348,7 +344,7 @@ def test_create_certificate_runner(mods, tmpdir):
     assert ret == _EXAMPLE_CERT
     assert os.path.exists(path)
 
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf8") as f:
         assert f.read() == test_crt
 
 

@@ -10,6 +10,7 @@ import binascii
 import datetime
 import os
 import re
+from pprint import pprint
 
 from salt.exceptions import (
     CommandExecutionError,
@@ -18,13 +19,14 @@ from salt.exceptions import (
 )
 
 try:
-    from salt.utils.files import fopen as _fopen, fpopen as _fpopen
+    from salt.utils.files import fopen as _fopen
+    from salt.utils.files import fpopen as _fpopen
 except ImportError:
-    from salt.utils import fopen as _fopen, fpopen as _fpopen
+    from salt.utils import fopen as _fopen
+    from salt.utils import fpopen as _fpopen
 
 try:
     from cryptography import x509
-
     from cryptography.hazmat.backends import default_backend as _default_backend
     from cryptography.hazmat.primitives import hashes, serialization
     from cryptography.hazmat.primitives.asymmetric import ec, rsa
@@ -120,7 +122,7 @@ def create_private_key(path, type="ec", size=4096, curve="secp256r1"):
         ret["curve"] = curve
 
     else:
-        raise SaltInvocationError("Unsupported key type: {}".format(type))
+        raise SaltInvocationError(f"Unsupported key type: {type}")
 
     out = key.private_bytes(
         encoding=serialization.Encoding.PEM,
@@ -164,9 +166,7 @@ def read_private_key(path):
         ret["size"] = key.key_size
 
     else:
-        raise SaltInvocationError(
-            "Unsupported private key object: {0}".format(type(key))
-        )
+        raise SaltInvocationError(f"Unsupported private key object: {type(key)}")
 
     return ret
 
@@ -281,7 +281,9 @@ def read_csr(csr):
     }
 
 
-def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
+def create_certificate(
+    path=None, text=False, csr=None, timeout=120, **kwargs
+):  # pylint: disable=R0912
     """
     Create a certificate by asking the master to sign a certificate signing
     request (CSR) or create a CSR on-the-fly.
@@ -333,6 +335,9 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
         raise SaltInvocationError("Either use 'runner' or 'module'")
 
     if "runner" not in kwargs and "module" not in kwargs:
+        pprint(__salt__)
+        # import pdb
+        # pdb.set_trace()
         default = __salt__["config.get"]("pki:default", {})
 
         if "runner" in default:
@@ -376,10 +381,10 @@ def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):
 
     try:
         ret = read_certificate(resp["text"])
-    except ValueError as e:
+    except ValueError as err:
         raise CommandExecutionError(
-            f"Did not return a valid PEM-encoded certificate: {e}"
-        )
+            f"Did not return a valid PEM-encoded certificate: {err}"
+        ) from err
 
     if path:
         with _fopen(path, "w") as f:
@@ -516,7 +521,7 @@ def _create_extensions(extensions):
     result = []
 
     for name, value in extensions.items():
-        if not name in _EXTENSIONS:
+        if name not in _EXTENSIONS:
             raise KeyError(f"Unsupported extension: {name}")
 
         result.append(_EXTENSIONS[name].build(value))
@@ -531,21 +536,18 @@ class _SubjectAltName:
 
         for name in ext.value:
             if isinstance(name, x509.RFC822Name):
-                names.append("email:{}".format(name.value))
+                names.append(f"email:{name.value}")
             if isinstance(name, x509.DNSName):
-                names.append("DNS:{}".format(name.value))
+                names.append(f"DNS:{name.value}")
             if isinstance(name, x509.DirectoryName):
-                names.append("dirName:{}".format(name.value))
+                names.append(f"dirName:{name.value}")
             if isinstance(name, x509.UniformResourceIdentifier):
-                names.append("URI:{}".format(name.value))
+                names.append(f"URI:{name.value}")
             if isinstance(name, x509.IPAddress):
-                names.append("IP:{}".format(name.value))
+                names.append(f"IP:{name.value}")
             if isinstance(name, x509.OtherName):
                 names.append(
-                    "otherName:{};{}".format(
-                        name.type_id.dotted_string,
-                        "HEX:{}".format(binascii.hexlify(name.value)),
-                    )
+                    f"otherName:{name.type_id.dotted_string};HEX:{binascii.hexlify(name.value)}"
                 )
 
         return sorted(names)
@@ -582,7 +584,7 @@ class _SubjectAltName:
             return x509.DirectoryName(str(value))
 
         if key in ("ip", "ip address"):
-            import ipaddress
+            import ipaddress  # pylint: disable=C0415
 
             try:
                 value = ipaddress.ip_address(str(value))
