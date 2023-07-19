@@ -1,6 +1,6 @@
 [project]
 name = "salt-pki"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = ["acme", "cryptography", "distro", "salt"]
 requires-python = ">=3.8.2,<4.0"
 
