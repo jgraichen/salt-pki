@@ -1,8 +1,11 @@
-[MESSAGES CONTROL]
-disable=bad-continuation
+# vim: ft=ini
+
+[BASIC]
+good-names=d,e,f,fn,i
 
 [VARIABLES]
-additional-builtins=__opts__, __salt__,__utils__
-
-[FORMAT]
-good-names=d,e,f,fn,i
+additional-builtins=
+    __salt__,
+    __opts__,
+    __grains__,
+    __pillar__
