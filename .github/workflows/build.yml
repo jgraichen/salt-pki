@@ -12,18 +12,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: Salt 3007
+            env: py3-salt3007-crypt42
+            python: "3.10"
           - name: Salt 3006
             env: py3-salt3006-crypt39
-            python: '3.10'
-          - name: Salt 3005
-            env: py3-salt3005-crypt33
-            python: '3.9'
-          - name: Ubuntu 22.04
-            env: py3-salt3004-crypt34
-            python: '3.10'
-          - name: Debian 11
-            env: py3-salt3002-crypt33
-            python: '3.9'
+            python: "3.10"
 
     steps:
       - uses: actions/checkout@v1
@@ -39,6 +33,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: pdm-project/setup-pdm@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - run: pdm install --dev --no-self --no-default
       - run: pdm run black --check .
