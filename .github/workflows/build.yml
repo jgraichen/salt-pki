@@ -27,12 +27,22 @@ jobs:
       - run: pdm install --dev --no-self --no-default
       - run: pdm run tox -e ${{ matrix.env }} -- -vv
 
-  black:
+  ruff-check:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: pdm-project/setup-pdm@v4
         with:
           python-version: "3.12"
       - run: pdm install --dev --no-self --no-default
-      - run: pdm run black --check .
+      - run: pdm run ruff check --no-fix --diff
+
+  ruff-format:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: "3.12"
+      - run: pdm install --dev --no-self --no-default
+      - run: pdm run ruff format --diff --check
