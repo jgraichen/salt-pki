@@ -16,7 +16,7 @@ dev = [
     "matchlib>=0.2.1",
     "mypy~=1.3",
     "pylint~=2.17.4",
-    "pytest~=7.4.0",
+    "pytest~=8.2.2",
     "ruff==0.4.7",
     "tox~=4.15.1",
 ]
