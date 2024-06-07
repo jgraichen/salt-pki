@@ -4,12 +4,8 @@
 import logging
 import os
 
-try:
-    from salt.utils.files import backup_minion as _backup_minion
-except ImportError:
-    from salt.utils import backup_minion as _backup_minion
-
 from salt.exceptions import SaltInvocationError
+from salt.utils.files import backup_minion
 
 
 def __virtual__():
@@ -79,7 +75,7 @@ def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup
 
     if os.path.isfile(name) and backup:
         bkroot = os.path.join(__opts__["cachedir"], "file_backup")
-        _backup_minion(name, bkroot)
+        backup_minion(name, bkroot)
 
     __salt__["pki.create_private_key"](path=name, type=type, size=size, curve=curve)
 
@@ -171,7 +167,7 @@ def certificate(name, csr=None, days_remaining=28, backup=True, **kwargs):  # py
 
     if os.path.isfile(name) and backup:
         bkroot = os.path.join(__opts__["cachedir"], "file_backup")
-        _backup_minion(name, bkroot)
+        backup_minion(name, bkroot)
 
     result = __salt__["pki.create_certificate"](path=name, csr=csr, **kwargs)
 
