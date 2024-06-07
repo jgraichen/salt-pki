@@ -16,13 +16,8 @@ from salt.exceptions import (
     SaltInvocationError,
     SaltReqTimeoutError,
 )
-
-try:
-    from salt.utils.files import fopen as _fopen
-    from salt.utils.files import fpopen as _fpopen
-except ImportError:
-    from salt.utils import fopen as _fopen
-    from salt.utils import fpopen as _fpopen
+from salt.utils.files import fopen as _fopen
+from salt.utils.files import fpopen as _fpopen
 
 try:
     from cryptography import x509
@@ -280,9 +275,7 @@ def read_csr(csr):
     }
 
 
-def create_certificate(
-    path=None, text=False, csr=None, timeout=120, **kwargs
-):  # pylint: disable=R0912
+def create_certificate(path=None, text=False, csr=None, timeout=120, **kwargs):  # pylint: disable=R0912
     """
     Create a certificate by asking the master to sign a certificate signing
     request (CSR) or create a CSR on-the-fly.

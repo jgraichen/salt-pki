@@ -21,9 +21,7 @@ def __virtual__():
     return True
 
 
-def private_key(
-    name, new=False, type="ec", size=4096, curve="secp256r1", backup=True
-):  # pylint: disable=R0913
+def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup=True):  # pylint: disable=R0913
     """
     Manage a private key.
 
@@ -91,9 +89,7 @@ def private_key(
     return ret
 
 
-def certificate(
-    name, csr=None, days_remaining=28, backup=True, **kwargs
-):  # pylint: disable=R0912
+def certificate(name, csr=None, days_remaining=28, backup=True, **kwargs):  # pylint: disable=R0912
     """
     Manage a x509 certificate.
 
