@@ -15,7 +15,7 @@ test = [
 dev = [
     "matchlib>=0.2.1",
     "mypy~=1.3",
-    "pylint~=2.17.4",
+    "pylint~=3.2.3",
     "pytest~=8.2.2",
     "ruff==0.4.7",
     "tox~=4.15.1",
