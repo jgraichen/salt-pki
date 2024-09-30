@@ -7,7 +7,7 @@ on:
 jobs:
   pytest:
     name: ${{ matrix.name }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -28,7 +28,7 @@ jobs:
       - run: pdm run tox -e ${{ matrix.env }} -- -vv
 
   ruff-check:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: pdm-project/setup-pdm@v4
@@ -38,7 +38,7 @@ jobs:
       - run: pdm run ruff check --no-fix --diff
 
   ruff-format:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: pdm-project/setup-pdm@v4
