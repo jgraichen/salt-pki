@@ -17,7 +17,7 @@ def __virtual__():
     return True
 
 
-def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup=True):  # pylint: disable=R0913
+def private_key(name, new=False, type="ec", size=4096, curve="secp256r1", backup=True):  # pylint: disable=R0913,R0917
     """
     Manage a private key.
 
