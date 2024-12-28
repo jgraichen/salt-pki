@@ -1,8 +1,9 @@
-name: build
+name: Test
 
 on:
   - push
   - pull_request
+  - workflow_dispatch
 
 jobs:
   pytest:
@@ -21,28 +22,37 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: True
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: pdm install --dev --no-self --no-default
-      - run: pdm run tox -e ${{ matrix.env }} -- -vv
+      - run: uv sync --dev
+      - run: uv run tox -e ${{ matrix.env }} -- -vv
 
   ruff-check:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: True
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pdm install --dev --no-self --no-default
-      - run: pdm run ruff check --no-fix --diff
+      - run: uv sync --dev
+      - run: uv run ruff check --no-fix --diff
 
   ruff-format:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: True
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pdm install --dev --no-self --no-default
-      - run: pdm run ruff format --diff --check
+      - run: uv sync --dev
+      - run: uv run ruff format --diff --check
