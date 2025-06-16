@@ -5,7 +5,7 @@ dependencies = ["acme", "cryptography", "distro", "salt"]
 requires-python = ">=3.10,<4.0"
 
 [project.optional-dependencies]
-test = ["matchlib", "pylint~=3.3.3", "pytest~=8.3.2"]
+test = ["matchlib", "pylint~=3.3.3", "pytest~=8.4.0"]
 
 [tool.pyright]
 include = ["salt_tower", "test"]
@@ -28,7 +28,7 @@ dev-dependencies = [
     "matchlib",
     "mypy~=1.3",
     "pylint~=3.3.3",
-    "pytest~=8.3.2",
+    "pytest~=8.4.0",
     "ruff==0.11.13",
     "tox~=4.26.0",
     "tox-uv>=1.25.0",
