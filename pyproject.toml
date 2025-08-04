@@ -30,7 +30,7 @@ dev-dependencies = [
     "pylint~=3.3.3",
     "pytest~=8.4.0",
     "ruff==0.12.7",
-    "tox~=4.27.0",
+    "tox~=4.28.4",
     "tox-uv>=1.25.0",
     "uv<0.6.0",
 ]
