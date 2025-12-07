@@ -8,7 +8,7 @@ requires-python = ">=3.10,<4.0"
 test = [
   "matchlib",      #
   "pylint~=3.3.3",
-  "pytest~=8.4.0",
+  "pytest~=9.0.2",
 ]
 dev = [
   { include-group = "test" }, #
