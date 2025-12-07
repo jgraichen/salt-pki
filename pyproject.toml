@@ -7,7 +7,7 @@ requires-python = ">=3.10,<4.0"
 [dependency-groups]
 test = [
   "matchlib",      #
-  "pylint~=3.3.3",
+  "pylint~=4.0.4",
   "pytest~=9.0.2",
 ]
 dev = [
