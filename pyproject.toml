@@ -14,7 +14,7 @@ dev = [
   { include-group = "test" }, #
   "mypy~=2.0",
   "ruff==0.16.6",
-  "tox~=4.53.0",
+  "tox~=4.61.2",
 ]
 
 [tool.pyright]
