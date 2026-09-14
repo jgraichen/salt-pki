@@ -11,7 +11,7 @@ test = [
   "pytest~=9.0.2",
 ]
 lint = [
-  "ruff==0.16.6", #
+  "ruff==0.16.7", #
 ]
 dev = [
   { include-group = "test" }, #
