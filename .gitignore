@@ -7,7 +7,7 @@ __pypackages__/
 /.mypy_cache/
 /.pdm-python
 /.pytest_cache/
-/.tox
+/.nox
 /.venv
 /.vscode
 /*.egg-info
